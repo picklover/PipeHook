@@ -1,0 +1,8 @@
+/.vs
+/x64
+/DumperLogIO/x64
+/TestPipeClient/x64
+/TestPipeServer/x64
+/TestPipeServer/*.user
+/TestPipeClient/*.user
+/DumperLogIO/*.user
