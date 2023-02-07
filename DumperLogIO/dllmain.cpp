@@ -3,6 +3,7 @@
 #include <Windows.h>
 #include <stdio.h>
 #include <shlobj.h>
+#include <process.h>
 #pragma comment(lib, "shell32.lib") 
 
 HANDLE pipe_hnd;
@@ -48,11 +49,11 @@ BOOL WINAPI DetourReadFile(
 	BOOL res = fpReadFile(hFile, lpBuffer, nNumberOfBytesToRead, lpNumberOfBytesRead, lpOverlapped);
 	if (pipe_hnd && pipe_hnd == hFile) {
 		//log
-		printf("R[%d]\n", nNumberOfBytesToRead);
+		printf("Read[size:%d]\n", nNumberOfBytesToRead);
 		for (int i = 0; i < nNumberOfBytesToRead; i++) {
-			printf("%02x ", *((BYTE*)lpBuffer)+i);
+			printf("%02x ", *((BYTE*)lpBuffer+i));
 		}
-		printf("\n");
+		printf("\n\n");
 		fflush(stdout);
 	}
 	return res;
@@ -68,11 +69,11 @@ BOOL WINAPI DetourWriteFile(
 	BOOL res = fpWriteFile(hFile, lpBuffer, nNumberOfBytesToWrite, lpNumberOfBytesWritten, lpOverlapped);
 	if (pipe_hnd && pipe_hnd == hFile) {
 		//log
-		printf("W[%d]\n", nNumberOfBytesToWrite);
+		printf("Write[size:%d]\n", nNumberOfBytesToWrite);
 		for (int i = 0; i < nNumberOfBytesToWrite; i++) {
-			printf("%02x ", *((BYTE*)lpBuffer) + i);
+			printf("%02x ", *((BYTE*)lpBuffer+i));
 		}
-		printf("\n");
+		printf("\n\n");
 		fflush(stdout);
 	}
 	return res;
@@ -128,6 +129,9 @@ void initLog() {
 	SHGetSpecialFolderPathA(0, path, CSIDL_DESKTOPDIRECTORY, 0);
 	strcat(path, "\\LogInfo.txt");
 	freopen(path, "a", stdout);
+
+	printf("PID: %d(%x)\n", _getpid(), _getpid());
+	fflush(stdout);
 }
 BOOL APIENTRY DllMain( HMODULE hModule,
                        DWORD  ul_reason_for_call,
